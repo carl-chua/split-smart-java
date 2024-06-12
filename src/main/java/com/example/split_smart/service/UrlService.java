@@ -11,9 +11,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.example.split_smart.model.Url;
+import com.example.split_smart.util.SupabaseUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -34,26 +34,34 @@ public class UrlService {
 
   private RestTemplate restTemplate = new RestTemplate();
 
-  public String getOriginalUrl(String originalUrl) {
-    HttpHeaders headers = new HttpHeaders();
-    headers.set("apikey", supabaseKey);
-    headers.set("Authorization", "Bearer " + supabaseKey);
-    headers.set("Range", "0-9");
+  // Get the short URL from the original URL
+  public String getShortUrl(String originalUrl) {
+    ResponseEntity<String> response = SupabaseUtil.getItem("original_url", originalUrl);
 
-    HttpEntity<String> entity = new HttpEntity<>(null, headers);
-
-    // Build the URL with the query parameter
-    String urlWithQueryParam = UriComponentsBuilder.fromHttpUrl(supabaseUrl + "/rest/v1/url")
-        .queryParam("original_url", "eq." + originalUrl)
-        .toUriString();
-
-    ResponseEntity<String> response = restTemplate.exchange(urlWithQueryParam, HttpMethod.GET, entity,
-        String.class);
+    // convert JSON string to object
     if (response.getStatusCode().is2xxSuccessful()) {
       Gson gson = new Gson();
       Type urlListType = new TypeToken<List<Url>>() {
       }.getType();
       List<Url> urls = gson.fromJson(response.getBody(), urlListType);
+
+      return urls.isEmpty() ? "" : urls.get(0).getShortUrl();
+    } else {
+      return "";
+    }
+  }
+
+  // Get the Original URL from the short URL
+  public String getOriginalUrl(String shortUrl) {
+    ResponseEntity<String> response = SupabaseUtil.getItem("short_url", shortUrl);
+
+    // convert JSON string to object
+    if (response.getStatusCode().is2xxSuccessful()) {
+      Gson gson = new Gson();
+      Type urlListType = new TypeToken<List<Url>>() {
+      }.getType();
+      List<Url> urls = gson.fromJson(response.getBody(), urlListType);
+
       return urls.isEmpty() ? "" : urls.get(0).getOriginalUrl();
     } else {
       return "";

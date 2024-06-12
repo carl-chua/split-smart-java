@@ -23,6 +23,11 @@ public class UrlController {
     this.urlService = urlService;
   }
 
+  @GetMapping("/get_short_url")
+  public String getShortUrl(@RequestParam(value = "url", required = true) String url) {
+    return urlService.getShortUrl(url);
+  }
+
   @GetMapping("/get_original_url")
   public String getOriginalUrl(@RequestParam(value = "url", required = true) String url) {
     return urlService.getOriginalUrl(url);
