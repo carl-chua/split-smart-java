@@ -43,3 +43,13 @@ Open [http://localhost:8080](http://localhost:8080) with your browser to see the
 ```bash
 mvn package appengine:deploy
 ```
+
+https://split-smart-425113.as.r.appspot.com
+
+```
+/
+/hello?name=carl&age=27
+/url/get_short_url?url=
+/url/get_original_url?url=
+/url/shorten?url=
+```
