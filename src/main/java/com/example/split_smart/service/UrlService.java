@@ -91,7 +91,7 @@ public class UrlService {
     ResponseEntity<String> response = SupabaseUtil.saveItem(jsonString);
 
     if (response.getStatusCode().is2xxSuccessful()) {
-      return springbootUrl + "/" + shortUrl;
+      return springbootUrl + "/url/" + shortUrl;
     } else {
       return "";
     }
