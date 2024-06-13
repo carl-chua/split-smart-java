@@ -7,7 +7,6 @@ import java.util.Random;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import com.example.split_smart.model.Url;
 import com.example.split_smart.util.SupabaseUtil;
@@ -31,8 +30,6 @@ public class UrlService {
   private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
   private Random random = new Random();
-
-  private RestTemplate restTemplate = new RestTemplate();
 
   // Get the short URL from the original URL
   public String getShortUrl(String originalUrl) {
