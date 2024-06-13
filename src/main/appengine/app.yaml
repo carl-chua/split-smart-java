@@ -6,6 +6,6 @@ runtime_config:
   runtime_version: '21'
 
 env_variables:
-  SPRINGBOOT_URL: ''
-  SUPABASE_URL: ''
+  SPRINGBOOT_URL: 'https://split-smart-425113.as.r.appspot.com'
+  SUPABASE_URL: 'https://hxhpgjrtbyeelougbebl.supabase.co'
   SUPABASE_KEY: ''
