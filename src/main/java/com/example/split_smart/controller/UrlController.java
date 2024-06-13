@@ -1,12 +1,19 @@
 package com.example.split_smart.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 
+import com.example.split_smart.model.UrlRequest;
 import com.example.split_smart.service.UrlService;
 
 @RestController
@@ -23,18 +30,27 @@ public class UrlController {
     this.urlService = urlService;
   }
 
+  @GetMapping("/{shortUrl}")
+  public RedirectView redirect(@PathVariable("shortUrl") String shortUrl) {
+    String originalUrl = urlService.getOriginalUrl(shortUrl);
+    return new RedirectView(originalUrl);
+  }
+
   @GetMapping("/get_short_url")
-  public String getShortUrl(@RequestParam(value = "url", required = true) String url) {
-    return urlService.getShortUrl(url);
+  public ResponseEntity<?> getShortUrl(@RequestParam(value = "url", required = true) String url) {
+    String shortUrl = urlService.getShortUrl(url);
+    return ResponseEntity.ok().body(Map.of("url", shortUrl));
   }
 
   @GetMapping("/get_original_url")
-  public String getOriginalUrl(@RequestParam(value = "url", required = true) String url) {
-    return urlService.getOriginalUrl(url);
+  public ResponseEntity<?> getOriginalUrl(@RequestParam(value = "url", required = true) String url) {
+    String originalUrl = urlService.getOriginalUrl(url);
+    return ResponseEntity.ok().body(Map.of("url", originalUrl));
   }
 
   @PostMapping("/shorten")
-  public String shorten(@RequestParam(value = "url", required = true) String url) {
-    return urlService.createShortUrl(url);
+  public ResponseEntity<?> shorten(@RequestBody UrlRequest request) {
+    String shortenedUrl = urlService.createShortUrl(request.getUrl());
+    return ResponseEntity.ok().body(Map.of("url", shortenedUrl));
   }
 }

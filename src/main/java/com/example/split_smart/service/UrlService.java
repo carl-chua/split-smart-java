@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -19,6 +16,9 @@ import com.google.gson.reflect.TypeToken;
 
 @Service
 public class UrlService {
+
+  @Value("${SPRINGBOOT_URL}")
+  private String springbootUrl;
 
   @Value("${SUPABASE_URL}")
   private String supabaseUrl;
@@ -70,8 +70,7 @@ public class UrlService {
 
   public String createShortUrl(String originalUrl) {
     String shortUrl = generateRandomShortUrl();
-    saveUrl(shortUrl, originalUrl);
-    return shortUrl;
+    return saveUrl(shortUrl, originalUrl);
   }
 
   private String generateRandomShortUrl() {
@@ -85,23 +84,17 @@ public class UrlService {
     return shortLink;
   }
 
+  // save the url to the database
   private String saveUrl(String shortUrl, String originalUrl) {
-    HttpHeaders headers = new HttpHeaders();
-    headers.set("apikey", supabaseKey);
-    headers.set("Authorization", "Bearer " + supabaseKey);
-    headers.set("Content-Type", "application/json");
-    headers.set("Prefer", "return=minimal");
-
     Url url = new Url(originalUrl, shortUrl);
     Gson gson = new Gson();
     // convert object to JSON string
     String jsonString = gson.toJson(url);
-    HttpEntity<String> entity = new HttpEntity<>(jsonString, headers);
 
-    ResponseEntity<String> response = restTemplate.exchange(supabaseUrl + "/rest/v1/url", HttpMethod.POST, entity,
-        String.class);
+    ResponseEntity<String> response = SupabaseUtil.saveItem(jsonString);
+
     if (response.getStatusCode().is2xxSuccessful()) {
-      return shortUrl;
+      return springbootUrl + "/" + shortUrl;
     } else {
       return "";
     }

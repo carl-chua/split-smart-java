@@ -48,7 +48,7 @@ public final class SupabaseUtil {
         String.class);
 
     if (response.getStatusCode().is2xxSuccessful()) {
-      System.out.println("Response::::::::::: " + response.getBody());
+      System.out.println("Response::::::::::: " + response.getStatusCode() + " - " + response.getBody());
       return response;
     } else {
       System.err.println("Error::::::::::: " + response.getStatusCode() + " - " + response.getBody());
@@ -56,4 +56,29 @@ public final class SupabaseUtil {
     }
   }
 
+  public static ResponseEntity<String> saveItem(String body) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.set("apikey", supabaseKey);
+    headers.set("Authorization", "Bearer " + supabaseKey);
+    headers.set("Content-Type", "application/json");
+    headers.set("Prefer", "return=minimal");
+
+    HttpEntity<String> entity = new HttpEntity<>(body, headers);
+
+    // Build the URL with the query parameter
+    String urlWithQueryParam = UriComponentsBuilder.fromHttpUrl(supabaseUrl + "/rest/v1/url")
+        .toUriString();
+
+    // Trigger the HTTP POST request to supabase
+    ResponseEntity<String> response = restTemplate.exchange(urlWithQueryParam, HttpMethod.POST, entity,
+        String.class);
+
+    if (response.getStatusCode().is2xxSuccessful()) {
+      System.out.println("Response::::::::::: " + response.getStatusCode() + " - " + response.getBody());
+      return response;
+    } else {
+      System.err.println("Error::::::::::: " + response.getStatusCode() + " - " + response.getBody());
+      return response;
+    }
+  }
 }
